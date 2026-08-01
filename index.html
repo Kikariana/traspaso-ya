@@ -636,16 +636,33 @@ document.getElementById('extractBtn').addEventListener('click', async ()=>{
       }
     });
     // prefill seller from RUNT owner
-    if(parsed.propietario_apellido1) state.seller.apellido1 = String(parsed.propietario_apellido1).toUpperCase();
-    if(parsed.propietario_apellido2) state.seller.apellido2 = String(parsed.propietario_apellido2).toUpperCase();
-    if(parsed.propietario_nombres) state.seller.nombres = String(parsed.propietario_nombres).toUpperCase();
-    if(parsed.propietario_documento) state.seller.documento = state.vehicle.propietario_documento;
+    let propTipo = '';
     if(parsed.propietario_tipo_documento){
       const t = String(parsed.propietario_tipo_documento).toUpperCase().replace(/[^A-Z]/g,'');
-      if(DOCTYPE_OPTIONS.some(o=>o.value===t)){
-        state.seller.tipo_documento = t;
-        state.vehicle.propietario_tipo_documento = t;
-      }
+      if(DOCTYPE_OPTIONS.some(o=>o.value===t)) propTipo = t;
+    }
+    if(propTipo === 'NIT'){
+      // Es persona jurídica: a veces el modelo pone el nombre de la empresa en
+      // "apellido1" en vez de "nombres". Juntamos todo en un solo campo
+      // (nombres) y dejamos los apellidos vacíos, para que coincida con la
+      // casilla única que se muestra cuando el tipo de documento es NIT.
+      const empresa = [parsed.propietario_nombres, parsed.propietario_apellido1, parsed.propietario_apellido2]
+        .filter(Boolean).join(' ').trim();
+      state.seller.nombres = empresa.toUpperCase();
+      state.seller.apellido1 = '';
+      state.seller.apellido2 = '';
+      state.vehicle.propietario_nombres = empresa.toUpperCase();
+      state.vehicle.propietario_apellido1 = '';
+      state.vehicle.propietario_apellido2 = '';
+    } else {
+      if(parsed.propietario_apellido1) state.seller.apellido1 = String(parsed.propietario_apellido1).toUpperCase();
+      if(parsed.propietario_apellido2) state.seller.apellido2 = String(parsed.propietario_apellido2).toUpperCase();
+      if(parsed.propietario_nombres) state.seller.nombres = String(parsed.propietario_nombres).toUpperCase();
+    }
+    if(parsed.propietario_documento) state.seller.documento = state.vehicle.propietario_documento;
+    if(propTipo){
+      state.seller.tipo_documento = propTipo;
+      state.vehicle.propietario_tipo_documento = propTipo;
     }
 
     statusEl.innerHTML = `<div class="status ok">✓ Datos leídos. Revísalos en el siguiente paso.</div>`;
