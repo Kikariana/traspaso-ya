@@ -677,8 +677,15 @@ function norm(s){
 function fuzzyMatch(value, dict){
   const v = norm(value);
   if(!v) return null;
-  for(const key in dict){ if(v.includes(key) || key.includes(v)) return dict[key]; }
-  return null;
+  let best = null, bestLen = -1;
+  for(const key in dict){
+    if(v === key) return dict[key]; // coincidencia exacta gana de inmediato
+    if((v.includes(key) || key.includes(v)) && key.length > bestLen){
+      best = dict[key];
+      bestLen = key.length;
+    }
+  }
+  return best;
 }
 
 // ===== FUN (page 792x612, origin bottom-left => y = 612 - top) =====
