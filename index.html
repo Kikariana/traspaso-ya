@@ -402,6 +402,20 @@ const THOUSANDS_KEYS = ['valor','documento','propietario_documento'];
 const PHONE_KEYS = ['telefono'];
 const NUMERIC_ONLY_KEYS = ['documento','telefono','propietario_documento'];
 
+// Contador de uso: cada extracción exitosa agrega una fila (fecha/hora) a
+// una hoja de Google propia, sin ningún dato personal de quien la usa.
+const EXTRACTION_LOG_URL = 'https://script.google.com/macros/s/AKfycbw6O9ZHxp5k-T63IaYRKRiRVSorGbngfM3MrhqutCA983fiJ-a6jsPboHn98w4rCJb8yQ/exec';
+function logExtraction(evento){
+  try{
+    fetch(EXTRACTION_LOG_URL, {
+      method:'POST',
+      mode:'no-cors', // Apps Script no responde con CORS; no necesitamos leer la respuesta
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({evento})
+    });
+  }catch(err){ /* si falla el registro, no debe afectar el uso de la app */ }
+}
+
 function buildFields(container, obj, labels, extra={}, onTypeChange=null){
   const el = document.getElementById(container);
   el.innerHTML = '';
@@ -666,6 +680,7 @@ document.getElementById('extractBtn').addEventListener('click', async ()=>{
     }
 
     statusEl.innerHTML = `<div class="status ok">✓ Datos leídos. Revísalos en el siguiente paso.</div>`;
+    logExtraction('extraccion_exitosa');
     goTo(1);
   }catch(err){
     console.error(err);
@@ -758,8 +773,8 @@ async function fillFUN(pdfDoc, font, fontBold){
     }
     page.drawText(String(txt), {x, y:y(top), size:s, font: useFont, color: PDFLib.rgb(0.09,0.13,0.24)});
   };
-  // Si el texto no cabe en una línea, lo parte en dos en vez de encogerlo o
-  // dejarlo invadir la casilla de al lado.
+  // Si el texto no cabe en una línea, lo parte en dos por palabras completas
+  // (no a mitad de palabra) en vez de encogerlo o invadir la casilla de al lado.
   const drawWrap2 = (txt,x,topLine1,size,maxWidth,lineGap=9)=>{
     if(!txt) return;
     const s = size;
@@ -768,9 +783,19 @@ async function fillFUN(pdfDoc, font, fontBold){
       draw(full, x, topLine1, s, false, maxWidth);
       return;
     }
-    const mid = Math.ceil(full.length/2);
-    draw(full.slice(0,mid), x, topLine1, s, false, maxWidth);
-    draw(full.slice(mid), x, topLine1+lineGap, s, false, maxWidth);
+    const words = full.split(' ');
+    let line1 = '', line2 = '';
+    for(let i=0;i<words.length;i++){
+      const test = line1 ? line1+' '+words[i] : words[i];
+      if(!line1 || fontBold.widthOfTextAtSize(test, s) <= maxWidth){
+        line1 = test;
+      } else {
+        line2 = words.slice(i).join(' ');
+        break;
+      }
+    }
+    draw(line1, x, topLine1, s, false, maxWidth);
+    if(line2) draw(line2, x, topLine1+lineGap, s, false, maxWidth);
   };
   // X centrada en un punto (cx, ctop) — se usa para el espacio en blanco DEBAJO
   // de la palabra/casilla, no sobre el texto impreso.
@@ -795,7 +820,7 @@ async function fillFUN(pdfDoc, font, fontBold){
   draw(v.placa_numeros, 749, 88, 10, true, 23);
   // Marca / Linea
   draw(v.marca, 379, 122, 8, false, 76);
-  draw(v.linea, 462, 122, 8, false, 171);
+  drawWrap2(v.linea, 462, 122, 8, 171, 9);
   // Colores / Modelo / Cilindrada
   draw(v.color, 379, 148, 8, false, 264);
   draw(v.modelo, 649, 148, 8, false, 62);
