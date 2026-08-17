@@ -219,6 +219,13 @@
 </style>
 </head>
 <body>
+<div id="operatorModal" style="display:none; position:fixed; inset:0; background:rgba(23,35,61,0.55); z-index:999; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:var(--white,#fff); max-width:380px; width:100%; border-radius:4px; padding:26px 24px; box-shadow:0 10px 40px rgba(0,0,0,0.25);">
+    <div style="font-family:'Oswald',sans-serif; font-weight:700; font-size:18px; margin-bottom:14px;">¿Cómo te llamas?</div>
+    <input id="operatorNameInput" type="text" placeholder="Tu nombre" style="width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid var(--line,#ccc); border-radius:2px; font-size:14px; margin-bottom:14px;">
+    <button id="operatorNameSave" class="btn btn-yellow" style="width:100%;">Guardar</button>
+  </div>
+</div>
 <div class="wrap">
 
   <div class="masthead">
@@ -227,6 +234,7 @@
       <div class="brand-sub">Compraventa vehicular · Colombia</div>
     </div>
     <div class="folio" id="folio">EXP. N.° ------</div>
+    <div id="operatorLabel" style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft); text-align:right; margin-top:2px;"></div>
   </div>
 
   <p class="tagline">Sube una foto de la tarjeta de propiedad, completa los datos de comprador y vendedor, y descarga el Contrato de Compraventa, el Mandato y el FUN listos para imprimir y firmar.</p>
@@ -653,7 +661,8 @@ const PHONE_KEYS = ['telefono'];
 const NUMERIC_ONLY_KEYS = ['documento','telefono','propietario_documento'];
 
 // Contador de uso: cada extracción exitosa agrega una fila (fecha/hora) a
-// una hoja de Google propia, sin ningún dato personal de quien la usa.
+// una hoja de Google propia, junto con el nombre de quien la usa (guardado
+// una sola vez por dispositivo, ver operatorName más abajo).
 const EXTRACTION_LOG_URL = 'https://script.google.com/macros/s/AKfycbw6O9ZHxp5k-T63IaYRKRiRVSorGbngfM3MrhqutCA983fiJ-a6jsPboHn98w4rCJb8yQ/exec';
 function logExtraction(evento){
   try{
@@ -661,10 +670,46 @@ function logExtraction(evento){
       method:'POST',
       mode:'no-cors', // Apps Script no responde con CORS; no necesitamos leer la respuesta
       headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({evento})
+      body: JSON.stringify({evento, operador: getOperatorName()})
     });
   }catch(err){ /* si falla el registro, no debe afectar el uso de la app */ }
 }
+
+// Nombre de quien usa la app en este dispositivo. Se pide una sola vez (con
+// un modal) y se guarda en localStorage; no se vuelve a preguntar después.
+const OPERATOR_KEY = 'traspasoya_operador';
+function getOperatorName(){
+  return localStorage.getItem(OPERATOR_KEY) || '';
+}
+function showOperatorModal(){
+  const modal = document.getElementById('operatorModal');
+  modal.style.display = 'flex';
+  const input = document.getElementById('operatorNameInput');
+  input.value = getOperatorName();
+  setTimeout(()=>input.focus(), 50);
+  const save = ()=>{
+    const name = input.value.trim();
+    if(!name) return;
+    localStorage.setItem(OPERATOR_KEY, name.toUpperCase());
+    modal.style.display = 'none';
+    renderOperatorLabel();
+  };
+  document.getElementById('operatorNameSave').onclick = save;
+  input.onkeydown = (e)=>{ if(e.key==='Enter') save(); };
+}
+function renderOperatorLabel(){
+  const el = document.getElementById('operatorLabel');
+  const name = getOperatorName();
+  el.innerHTML = name
+    ? `${name} · <a href="#" id="operatorChangeLink" style="color:var(--ink-soft); text-decoration:underline;">cambiar</a>`
+    : '';
+  const link = document.getElementById('operatorChangeLink');
+  if(link) link.addEventListener('click', e=>{ e.preventDefault(); showOperatorModal(); });
+}
+if(!getOperatorName()){
+  showOperatorModal();
+}
+renderOperatorLabel();
 
 function buildFields(container, obj, labels, extra={}, onTypeChange=null){
   const el = document.getElementById(container);
@@ -1656,6 +1701,7 @@ document.getElementById('generateBtn').addEventListener('click', async ()=>{
     statusEl.innerHTML = `<div class="status ok">✓ PDF generado (Compraventa + Mandato${extraMandatoDocs.length ? ' x'+(1+extraMandatoDocs.length) : ''} + FUN, ${totalDocs} páginas).</div>
       <div style="margin-top:8px;"><a href="${blobUrl}" download="${filename}" target="_blank" style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#17233D; text-decoration:underline;">Si no se descargó solo, toca aquí para abrirlo / guardarlo</a></div>`;
     stamp.classList.add('show');
+    logExtraction('pdf_generado');
   }catch(err){
     console.error(err);
     statusEl.innerHTML = `<div class="status err">Error generando el PDF: ${err.message || err}</div>`;
