@@ -372,6 +372,7 @@ const state = {
   tramite_solicitado:'',
   tramite_otro_texto:'',
   coOwnersEnabled:false,
+  coOwnersDetected:false,
   coOwners:[],
   buyerCoOwnersEnabled:false,
   buyerCoOwners:[]
@@ -440,18 +441,24 @@ function renderCoOwners(){
   const el = document.getElementById('coOwnersBlock');
   el.innerHTML = '';
 
+  // Todo este bloque (incluido el checkbox) solo aparece cuando la tarjeta
+  // trae "Y OTRO(S)" y se detectó automáticamente al extraer los datos —
+  // si no, no se muestra nada aquí, ni el checkbox. El checkbox arranca SIN
+  // marcar: el usuario elige si los diligencia aquí o los deja para llenar
+  // a mano en el papel.
+  if(!state.coOwnersDetected) return;
+
   const toggleWrap = document.createElement('div');
   toggleWrap.style.margin = '4px 0 10px';
   toggleWrap.innerHTML = `
     <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
       <input type="checkbox" id="coOwnersToggle" ${state.coOwnersEnabled ? 'checked' : ''}>
-      ¿La tarjeta tiene "Y OTRO(S)"? Agrega los demás propietarios
+      La tarjeta tiene "Y OTRO(S)", Agrega los demás propietarios
     </label>`;
   el.appendChild(toggleWrap);
   document.getElementById('coOwnersToggle').addEventListener('change', e=>{
     state.coOwnersEnabled = e.target.checked;
     if(state.coOwnersEnabled && !state.coOwners.length) state.coOwners.push({nombres:'', documento:'', tipo_documento:'CC'});
-    if(!state.coOwnersEnabled) state.coOwners = [];
     renderCoOwners();
   });
 
@@ -857,7 +864,7 @@ document.getElementById('extractBtn').addEventListener('click', async ()=>{
         : {type:"image", source:{type:"base64", media_type:img.mediaType, data:img.base64}};
     });
 
-  const prompt = `Estas son ${imageBlocks.length===2 ? 'el frente y el reverso' : 'una foto que muestra ambas caras'} de un documento que el usuario dice que es una tarjeta de propiedad o licencia de tránsito de un vehículo colombiano. Primero verifica si realmente es ese tipo de documento (tarjeta de propiedad / licencia de tránsito de un vehículo). Si NO lo es (por ejemplo es una cédula, un recibo, una foto sin relación, un documento de otro tipo, o está ilegible/borroso al punto de no poder confirmarlo), responde ÚNICAMENTE con este JSON: {"es_documento_valido": false, "motivo": "una frase corta en español explicando qué parece ser en su lugar"}. Si SÍ es una tarjeta de propiedad o licencia de tránsito, combina la información de ambas caras y extrae TODOS los datos visibles, y responde ÚNICAMENTE con un objeto JSON válido que incluya "es_documento_valido": true además de los demás campos, sin texto adicional, sin explicación, sin backticks ni marcado. Si un campo no es legible o no aparece en ninguna cara, usa "". El propietario en la tarjeta aparece como PRIMER APELLIDO, SEGUNDO APELLIDO, NOMBRES en ese orden — sepáralos en 3 campos distintos, no los combines. La placa también sepárala en la parte de letras y la parte de números (ej. placa "HEY169" → placa_letras: "HEY", placa_numeros: "169"). Identifica también el tipo de documento del propietario tal como aparece marcado o indicado en la tarjeta (uno de: CC, NIT, NN, PASAPORTE, CEXTRANJ, TIDENTI, NUIP, CDIPLOMATICO — usa CC si no se indica otro). Identifica también el organismo de tránsito ante el que está matriculado el vehículo (el organismo/entidad de tránsito que aparece en la tarjeta, por ejemplo "SECRETARIA DE TRANSITO DE FUNZA" o similar; usa "" si no aparece). Usa exactamente estas claves además de es_documento_valido: placa_letras, placa_numeros, marca, linea, modelo, color, clase, servicio, combustible, cilindraje, numero_motor, numero_chasis, numero_serie, vin, tipo_carroceria, capacidad, potencia, declaracion_importacion, fecha_importacion, organismo_transito, propietario_apellido1, propietario_apellido2, propietario_nombres, propietario_documento, propietario_tipo_documento.`;
+  const prompt = `Estas son ${imageBlocks.length===2 ? 'el frente y el reverso' : 'una foto que muestra ambas caras'} de un documento que el usuario dice que es una tarjeta de propiedad o licencia de tránsito de un vehículo colombiano. Primero verifica si realmente es ese tipo de documento (tarjeta de propiedad / licencia de tránsito de un vehículo). Si NO lo es (por ejemplo es una cédula, un recibo, una foto sin relación, un documento de otro tipo, o está ilegible/borroso al punto de no poder confirmarlo), responde ÚNICAMENTE con este JSON: {"es_documento_valido": false, "motivo": "una frase corta en español explicando qué parece ser en su lugar"}. Si SÍ es una tarjeta de propiedad o licencia de tránsito, combina la información de ambas caras y extrae TODOS los datos visibles, y responde ÚNICAMENTE con un objeto JSON válido que incluya "es_documento_valido": true además de los demás campos, sin texto adicional, sin explicación, sin backticks ni marcado. Si un campo no es legible o no aparece en ninguna cara, usa "". El propietario en la tarjeta aparece como PRIMER APELLIDO, SEGUNDO APELLIDO, NOMBRES en ese orden — sepáralos en 3 campos distintos, no los combines. Revisa con cuidado si justo después del nombre del propietario aparece el texto "Y OTRO", "Y OTROS" o "Y OTRO(S)" (indica que hay más de un propietario registrado) — si aparece, responde \"true\" en el campo propietario_tiene_otros (y no incluyas ese texto "Y OTRO(S)" dentro de los campos de nombre); si no aparece, responde \"false\". La placa también sepárala en la parte de letras y la parte de números (ej. placa "HEY169" → placa_letras: "HEY", placa_numeros: "169"). Identifica también el tipo de documento del propietario tal como aparece marcado o indicado en la tarjeta (uno de: CC, NIT, NN, PASAPORTE, CEXTRANJ, TIDENTI, NUIP, CDIPLOMATICO — usa CC si no se indica otro). Identifica también el organismo de tránsito ante el que está matriculado el vehículo (el organismo/entidad de tránsito que aparece en la tarjeta, por ejemplo "SECRETARIA DE TRANSITO DE FUNZA" o similar; usa "" si no aparece). Usa exactamente estas claves además de es_documento_valido: placa_letras, placa_numeros, marca, linea, modelo, color, clase, servicio, combustible, cilindraje, numero_motor, numero_chasis, numero_serie, vin, tipo_carroceria, capacidad, potencia, declaracion_importacion, fecha_importacion, organismo_transito, propietario_apellido1, propietario_apellido2, propietario_nombres, propietario_documento, propietario_tipo_documento, propietario_tiene_otros.`;
 
   try{
     const response = await fetch("/api/extract", {
@@ -901,10 +908,11 @@ document.getElementById('extractBtn').addEventListener('click', async ()=>{
       const t = String(parsed.propietario_tipo_documento).toUpperCase().replace(/[^A-Z]/g,'');
       if(DOCTYPE_OPTIONS.some(o=>o.value===t)) propTipo = t;
     }
-    // Detecta el sufijo "Y OTRO(S)" que trae la tarjeta cuando hay más de un
-    // propietario, y lo quita del nombre para no dejarlo pegado al texto.
+    // Detecta si hay más de un propietario: primero por el campo explícito
+    // que le pedimos al modelo, y como respaldo, por si quedó el sufijo
+    // "Y OTRO(S)" pegado al nombre (por si el modelo no usó el campo nuevo).
     const YOTRO_RE = /\s*Y\s*OTRO\s*\(?\s*S?\s*\)?\.?\s*$/i;
-    let otrosDetectado = false;
+    let otrosDetectado = String(parsed.propietario_tiene_otros).toLowerCase() === 'true';
     const limpiarYOtros = (txt)=>{
       if(!txt) return txt;
       if(YOTRO_RE.test(txt)){ otrosDetectado = true; return txt.replace(YOTRO_RE,'').trim(); }
@@ -937,7 +945,8 @@ document.getElementById('extractBtn').addEventListener('click', async ()=>{
       state.vehicle.propietario_tipo_documento = propTipo;
     }
     if(otrosDetectado){
-      state.coOwnersEnabled = true;
+      state.coOwnersDetected = true;
+      state.coOwnersEnabled = false; // el checkbox aparece pero sin marcar; el usuario decide
       if(!state.coOwners.length) state.coOwners.push({nombres:'', documento:'', tipo_documento:'CC'});
     }
 
