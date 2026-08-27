@@ -1253,8 +1253,17 @@ async function fillFUN(pdfDoc, font, fontBold){
   const claseHit = FUN_CLASE_X[fuzzyMatch(v.clase, Object.fromEntries(Object.keys(FUN_CLASE_X).map(k=>[k,k])))];
   if(claseHit) xAt(claseHit[0], FUN_CLASE_ROW_TOP[claseHit[1]], 11);
   // Combustible (la X va sobre el número de referencia, no hay espacio aparte)
-  const combBox = fuzzyMatch(v.combustible, FUN_COMBUSTIBLE_NUM);
-  if(combBox) xAt((combBox[0]+combBox[1])/2, (combBox[2]+combBox[3])/2, 10);
+  // Combustible: caso especial "GASOELEC" (híbrido gasolina-eléctrico) marca
+  // las dos casillas (GASOLINA y ELECTRICO) en vez de una sola.
+  const combVal = norm(v.combustible);
+  if(combVal.includes('GASOELEC')){
+    const g = FUN_COMBUSTIBLE_NUM.GASOLINA, e = FUN_COMBUSTIBLE_NUM.ELECTRIC;
+    xAt((g[0]+g[1])/2, (g[2]+g[3])/2, 10);
+    xAt((e[0]+e[1])/2, (e[2]+e[3])/2, 10);
+  } else {
+    const combBox = fuzzyMatch(v.combustible, FUN_COMBUSTIBLE_NUM);
+    if(combBox) xAt((combBox[0]+combBox[1])/2, (combBox[2]+combBox[3])/2, 10);
+  }
   // Capacidad Kg/Psj / Potencia HP — en la casilla en blanco debajo de cada etiqueta
   draw(v.capacidad, 382, 170, 9, false, 65);
   draw(v.potencia, 709, 170, 9, false, 62);
