@@ -10,183 +10,194 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Traspaso Ya</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <style>
   :root{
-    --paper:#F3EEDF;
-    --paper-dark:#E7DDBE;
-    --ink:#17233D;
-    --ink-soft:#4B5673;
-    --yellow:#F4BE00;
-    --stamp:#A3311B;
-    --green:#2C4A3B;
-    --line:#C9BC96;
-    --white:#FBF9F2;
+    --paper:#F6F4EE;
+    --paper-dark:#ECE8DB;
+    --ink:#12263A;
+    --ink-soft:#4a5c6e;
+    --ink-mid:#34475a;
+    --yellow:#F2B705;
+    --stamp:#B3402A;
+    --green:#2C6B4A;
+    --line:#d6d2c6;
+    --white:#ffffff;
+    --r:14px;
+    --display:'Bricolage Grotesque', sans-serif;
+    --body:'DM Sans', sans-serif;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     background:var(--paper);
-    background-image:
-      radial-gradient(circle at 20% 20%, rgba(23,35,61,0.025) 0, transparent 40%),
-      radial-gradient(circle at 80% 60%, rgba(23,35,61,0.025) 0, transparent 40%);
     color:var(--ink);
-    font-family:'IBM Plex Sans', sans-serif;
+    font-family:var(--body);
     min-height:100vh;
     padding:32px 16px 64px;
+    -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:760px; margin:0 auto;}
+  .wrap{max-width:780px; margin:0 auto;}
 
   /* Header */
   .masthead{
-    display:flex; align-items:flex-end; justify-content:space-between;
-    border-bottom:3px solid var(--ink);
-    padding-bottom:14px; margin-bottom:6px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px 16px;
+    padding-bottom:18px; margin-bottom:6px;
+    border-bottom:1.5px solid var(--ink);
+  }
+  .brandrow{display:flex; align-items:center; gap:10px;}
+  .logo{
+    width:34px; height:34px; border-radius:9px; background:var(--yellow); color:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-weight:800; font-size:20px; flex-shrink:0;
   }
   .brand{
-    font-family:'Oswald', sans-serif; font-weight:700;
-    font-size:clamp(30px,6vw,44px); letter-spacing:0.5px; text-transform:uppercase;
-    line-height:0.95; color:var(--ink);
+    font-family:var(--display); font-weight:800;
+    font-size:clamp(24px,5vw,30px); letter-spacing:-0.01em;
+    line-height:1; color:var(--ink);
   }
-  .brand span{color:var(--stamp);}
+  .brand span{color:var(--ink);}
   .brand-sub{
-    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft);
-    letter-spacing:1.5px; text-transform:uppercase; margin-top:6px;
+    font-family:var(--body); font-size:12px; font-weight:500; color:var(--ink-soft);
+    letter-spacing:0.08em; text-transform:uppercase; margin-top:8px;
   }
   .folio{
-    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft);
-    text-align:right; letter-spacing:0.5px;
+    margin-left:auto;
+    font-family:var(--body); font-size:12px; font-weight:700; color:var(--ink);
+    text-align:right; letter-spacing:0.08em; text-transform:uppercase;
+    background:var(--white); border:1.5px solid var(--line); border-radius:999px; padding:5px 12px;
   }
 
   .tagline{
-    font-size:15px; color:var(--ink-soft); margin:14px 0 28px;
-    line-height:1.5; text-align:left;
+    font-size:17px; color:var(--ink-mid); margin:22px 0 26px;
+    line-height:1.45; text-align:left; max-width:640px;
   }
 
-  /* Folder tabs */
-  .tabs{display:flex; gap:4px; margin-bottom:0; padding-left:6px;}
+  /* Tabs / steps */
+  .tabs{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:14px;}
   .tab{
-    flex:1; text-align:center; padding:10px 6px 12px;
-    font-family:'Oswald', sans-serif; font-weight:600; font-size:12.5px;
-    letter-spacing:0.8px; text-transform:uppercase;
-    background:var(--paper-dark); color:var(--ink-soft);
-    clip-path:polygon(8% 0, 92% 0, 100% 100%, 0% 100%);
-    position:relative; top:2px;
-    transition:background .2s, color .2s;
+    text-align:left; padding:12px 14px;
+    font-family:var(--body); font-weight:700; font-size:13px;
+    letter-spacing:0.08em; text-transform:uppercase;
+    background:transparent; color:var(--ink-soft);
+    border:1.5px solid var(--line); border-radius:var(--r);
+    transition:background .2s, color .2s, border-color .2s;
   }
-  .tab.active{background:var(--white); color:var(--ink); font-weight:700;}
-  .tab .n{display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:0.7; margin-bottom:2px;}
+  .tab.active{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .tab .n{
+    display:block; font-family:var(--display); font-weight:800; font-size:24px;
+    letter-spacing:0; line-height:1; margin-bottom:6px; color:var(--ink);
+  }
+  .tab.active .n{color:var(--yellow);}
 
   /* Sheet */
   .sheet{
     background:var(--white);
-    border:1px solid var(--line);
-    border-radius:2px;
-    padding:32px 28px 30px;
+    border:1.5px solid var(--line);
+    border-radius:16px;
+    padding:30px 28px 28px;
     position:relative;
-    box-shadow:0 1px 0 var(--line), 0 18px 40px -28px rgba(23,35,61,0.35);
-  }
-  .sheet::before{
-    content:"";
-    position:absolute; top:0; left:24px; right:24px; height:1px;
-    background-image:repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 12px);
   }
   .step{display:none;}
   .step.active{display:block; animation:fade .35s ease;}
   @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
 
   h2.step-title{
-    font-family:'Oswald', sans-serif; font-size:22px; font-weight:600;
-    text-transform:uppercase; letter-spacing:0.4px; margin:0 0 4px;
+    font-family:var(--display); font-size:30px; font-weight:800;
+    letter-spacing:-0.02em; line-height:1.05; margin:0 0 8px;
   }
-  .step-hint{color:var(--ink-soft); font-size:13.5px; margin:0 0 22px; line-height:1.5;}
+  .step-hint{color:var(--ink-mid); font-size:15px; margin:0 0 24px; line-height:1.45;}
 
   /* Upload zone */
   .mode-toggle{display:flex; gap:8px; margin-bottom:16px;}
   .mode-btn{
-    flex:1; font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.3px;
-    padding:10px 8px; border:1px solid var(--line); border-radius:2px; background:var(--paper);
+    flex:1; font-family:var(--body); font-weight:500; font-size:13px;
+    padding:11px 8px; border:1.5px solid var(--line); border-radius:12px; background:var(--white);
     color:var(--ink-soft); cursor:pointer; text-align:center; transition:all .15s;
   }
-  .mode-btn.active{background:var(--ink); color:var(--white); border-color:var(--ink);}
-  .mode-btn:hover:not(.active){border-color:var(--ink-soft); color:var(--ink);}
+  .mode-btn.active{background:var(--ink); color:var(--paper); border-color:var(--ink); font-weight:700;}
+  .mode-btn:hover:not(.active){border-color:var(--ink); color:var(--ink);}
 
   .dropzone{
-    border:2px dashed var(--line);
-    border-radius:3px;
+    border:1.5px dashed var(--ink-soft);
+    border-radius:var(--r);
     padding:36px 20px;
     text-align:center;
     cursor:pointer;
-    background:repeating-linear-gradient(135deg, rgba(23,35,61,0.015) 0 10px, transparent 10px 20px);
+    background:var(--paper);
     transition:border-color .2s, background .2s;
   }
-  .dropzone:hover, .dropzone.drag{border-color:var(--stamp); background:rgba(163,49,27,0.04);}
+  .dropzone:hover, .dropzone.drag{border-color:var(--ink); background:rgba(242,183,5,0.14);}
   .dropzone svg{margin-bottom:10px;}
-  .dropzone .cta{font-family:'Oswald',sans-serif; font-weight:600; font-size:15px; text-transform:uppercase; letter-spacing:0.5px;}
-  .dropzone .sub{font-size:12.5px; color:var(--ink-soft); margin-top:6px;}
+  .dropzone .cta{font-family:var(--display); font-weight:800; font-size:18px; letter-spacing:-0.01em;}
+  .dropzone .sub{font-size:13px; color:var(--ink-soft); margin-top:6px; line-height:1.4;}
   input[type=file]{display:none;}
 
   .pdf-chip{
     display:flex; align-items:center; gap:8px; width:100%;
-    background:var(--paper); border:1px solid var(--line); border-radius:2px;
-    padding:12px 10px; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink);
+    background:var(--paper); border:1.5px solid var(--line); border-radius:10px;
+    padding:12px 10px; font-family:var(--body); font-size:13px; color:var(--ink);
   }
   .pdf-chip span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 
   .preview-row{display:flex; gap:16px; align-items:flex-start; margin-top:18px;}
-  .preview-img{width:150px; height:110px; object-fit:cover; border:1px solid var(--line); border-radius:2px;}
-  .preview-meta{flex:1; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft);}
+  .preview-img{width:150px; height:110px; object-fit:cover; border:1.5px solid var(--line); border-radius:10px;}
+  .preview-meta{flex:1; font-family:var(--body); font-size:13px; color:var(--ink-soft);}
   .btn{
-    font-family:'Oswald', sans-serif; font-weight:600; font-size:14px; letter-spacing:0.5px; text-transform:uppercase;
-    border:none; border-radius:2px; padding:13px 22px; cursor:pointer;
+    font-family:var(--body); font-weight:700; font-size:14px; letter-spacing:0.02em;
+    border:1.5px solid transparent; border-radius:12px; padding:13px 22px; cursor:pointer;
     display:inline-flex; align-items:center; gap:8px;
-    transition:transform .12s, filter .12s;
+    transition:transform .12s, filter .12s, background .12s;
   }
   .btn:active{transform:translateY(1px);}
-  .btn-primary{background:var(--ink); color:var(--white);}
-  .btn-primary:hover{filter:brightness(1.15);}
-  .btn-yellow{background:var(--yellow); color:var(--ink);}
+  .btn-primary{background:var(--ink); color:var(--paper);}
+  .btn-primary:hover{filter:brightness(1.25);}
+  .btn-yellow{background:var(--yellow); color:var(--ink); border-color:var(--ink);}
   .btn-yellow:hover{filter:brightness(1.06);}
-  .btn-ghost{background:transparent; color:var(--ink-soft); border:1px solid var(--line);}
-  .btn-ghost:hover{border-color:var(--ink-soft); color:var(--ink);}
-  .btn:disabled{opacity:0.45; cursor:not-allowed;}
-  .btn-row{display:flex; gap:10px; margin-top:26px; justify-content:space-between;}
+  .btn-ghost{background:transparent; color:var(--ink); border-color:var(--ink);}
+  .btn-ghost:hover{background:var(--paper-dark);}
+  .btn:disabled{opacity:0.4; cursor:not-allowed;}
+  .btn-row{display:flex; gap:10px; margin-top:28px; justify-content:space-between;}
 
-  .status{font-family:'IBM Plex Mono',monospace; font-size:12.5px; margin-top:14px; display:flex; align-items:center; gap:8px;}
+  .status{font-family:var(--body); font-size:13.5px; margin-top:14px; display:flex; align-items:center; gap:8px;}
   .status.err{color:var(--stamp);}
   .status.ok{color:var(--green);}
-  .spin{width:13px; height:13px; border:2px solid var(--line); border-top-color:var(--ink); border-radius:50%; animation:spin .7s linear infinite;}
+  .spin{width:14px; height:14px; border:2px solid var(--line); border-top-color:var(--ink); border-radius:50%; animation:spin .7s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
 
   /* Fields */
   .fieldset-title{
-    font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:1.2px;
-    color:var(--stamp); margin:24px 0 10px; padding-top:16px; border-top:1px dashed var(--line);
+    font-family:var(--body); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--ink-soft); margin:26px 0 12px; padding-top:18px; border-top:1.5px solid var(--line);
   }
   .fieldset-title:first-of-type{margin-top:0; border-top:none; padding-top:0;}
   .grid{display:grid; grid-template-columns:1fr 1fr; gap:14px 16px;}
   .grid.full{grid-template-columns:1fr;}
   .field label{
-    display:block; font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase;
-    letter-spacing:0.8px; color:var(--ink-soft); margin-bottom:5px;
+    display:block; font-family:var(--body); font-size:11.5px; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.06em; color:var(--ink-soft); margin-bottom:6px;
   }
   .field input, .field select, .field textarea{
-    width:100%; font-family:'IBM Plex Mono',monospace; font-size:13.5px; color:var(--ink);
-    background:var(--paper); border:1px solid var(--line); border-radius:2px;
-    padding:10px 10px; outline:none;
+    width:100%; font-family:var(--body); font-size:15px; color:var(--ink);
+    background:var(--paper); border:1.5px solid var(--line); border-radius:10px;
+    padding:11px 12px; outline:none; transition:border-color .15s, background .15s, box-shadow .15s;
   }
-  .field input:focus, .field textarea:focus{border-color:var(--ink); background:var(--white);}
-  .field textarea{resize:vertical; min-height:44px; font-family:'IBM Plex Sans',sans-serif;}
+  .field input:focus, .field select:focus, .field textarea:focus{
+    border-color:var(--ink); background:var(--white); box-shadow:0 0 0 3px rgba(242,183,5,0.35);
+  }
+  .field textarea{resize:vertical; min-height:44px;}
 
   /* Checklist */
   .checklist{list-style:none; margin:0; padding:0;}
   .checklist li{
-    display:flex; gap:10px; align-items:flex-start; padding:9px 0;
-    border-bottom:1px solid var(--line); font-size:13.5px; line-height:1.4;
+    display:flex; gap:10px; align-items:flex-start; padding:12px 0;
+    border-bottom:1.5px solid var(--line); font-size:14.5px; line-height:1.45; color:var(--ink-mid);
   }
+  .checklist li b{color:var(--ink);}
   .checklist li:last-child{border-bottom:none;}
-  .checklist input{margin-top:3px;}
+  .checklist input{margin-top:3px; accent-color:var(--ink);}
+  input[type=checkbox], input[type=radio]{accent-color:var(--ink);}
 
   /* Stamp signature element */
   .stamp-wrap{display:flex; justify-content:center; margin:26px 0 10px;}
@@ -206,23 +217,27 @@
   .stamp svg{width:100%; height:100%; mix-blend-mode:multiply;}
 
   .footnote{
-    font-size:11.5px; color:var(--ink-soft); line-height:1.6; margin-top:22px;
-    padding-top:14px; border-top:1px dashed var(--line);
+    font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin-top:22px;
+    padding:14px 16px; background:rgba(242,183,5,0.16); border-radius:12px;
   }
   .footnote b{color:var(--ink);}
 
-  @media(max-width:520px){
+  @media(max-width:560px){
     .grid{grid-template-columns:1fr;}
     .preview-row{flex-direction:column;}
-    .tab{font-size:10.5px; padding:9px 3px 10px;}
+    .tabs{gap:6px;}
+    .tab{font-size:10.5px; padding:9px 8px;}
+    .tab .n{font-size:18px; margin-bottom:3px;}
+    .sheet{padding:22px 16px;}
+    h2.step-title{font-size:25px;}
   }
 </style>
 </head>
 <body>
-<div id="operatorModal" style="display:none; position:fixed; inset:0; background:rgba(23,35,61,0.55); z-index:999; align-items:center; justify-content:center; padding:20px;">
-  <div style="background:var(--white,#fff); max-width:380px; width:100%; border-radius:4px; padding:26px 24px; box-shadow:0 10px 40px rgba(0,0,0,0.25);">
-    <div style="font-family:'Oswald',sans-serif; font-weight:700; font-size:18px; margin-bottom:14px;">¿Cómo te llamas?</div>
-    <input id="operatorNameInput" type="text" placeholder="Tu nombre" style="width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid var(--line,#ccc); border-radius:2px; font-size:14px; margin-bottom:14px;">
+<div id="operatorModal" style="display:none; position:fixed; inset:0; background:rgba(18,38,58,0.6); z-index:999; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:var(--white,#fff); max-width:380px; width:100%; border-radius:16px; border:1.5px solid var(--ink); padding:26px 24px; box-shadow:0 10px 40px rgba(18,38,58,0.3);">
+    <div style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:20px; margin-bottom:14px;">¿Cómo te llamas?</div>
+    <input id="operatorNameInput" type="text" placeholder="Tu nombre" style="width:100%; box-sizing:border-box; padding:10px 12px; border:1.5px solid var(--line,#ccc); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:15px; margin-bottom:14px;">
     <button id="operatorNameSave" class="btn btn-yellow" style="width:100%;">Guardar</button>
   </div>
 </div>
@@ -230,11 +245,11 @@
 
   <div class="masthead">
     <div>
-      <div class="brand">Traspaso<span>Ya</span></div>
+      <div class="brandrow"><div class="logo">T</div><div class="brand">Traspaso<span>Ya</span></div></div>
       <div class="brand-sub">Compraventa vehicular · Colombia</div>
     </div>
     <div class="folio" id="folio">EXP. N.° ------</div>
-    <div id="operatorLabel" style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft); text-align:right; margin-top:2px;"></div>
+    <div id="operatorLabel" style="font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; color:var(--ink-soft); text-align:right; margin-top:2px;"></div>
   </div>
 
   <p class="tagline">Sube una foto de la tarjeta de propiedad, completa los datos de comprador y vendedor, y descarga el Contrato de Compraventa, el Mandato y el FUN listos para imprimir y firmar.</p>
@@ -242,7 +257,7 @@
   <div class="tabs">
     <div class="tab active" data-tab="0"><span class="n">01</span>Documento</div>
     <div class="tab" data-tab="1"><span class="n">02</span>Verificar</div>
-    <div class="tab" data-tab="2"><span class="n">03</span>Partes</div>
+    <div class="tab" data-tab="2"><span class="n">03</span>Datos</div>
     <div class="tab" data-tab="3"><span class="n">04</span>Contrato</div>
   </div>
 
@@ -261,7 +276,7 @@
       <div class="grid" id="uploadGrid-split" style="margin-bottom:6px;">
         <div>
           <div class="dropzone" id="dropzone-front" data-slot="front">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4B5673" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4a5c6e" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
             <div class="cta">Frente</div>
             <div class="sub">Toca aquí para tomar la foto o subir una imagen · JPG, PNG o PDF</div>
             <input type="file" class="fileInput" data-slot="front" accept="image/*,application/pdf">
@@ -270,7 +285,7 @@
         </div>
         <div>
           <div class="dropzone" id="dropzone-back" data-slot="back">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4B5673" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4a5c6e" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
             <div class="cta">Reverso</div>
             <div class="sub">Toca aquí para tomar la foto o subir una imagen · JPG, PNG o PDF</div>
             <input type="file" class="fileInput" data-slot="back" accept="image/*,application/pdf">
@@ -281,7 +296,7 @@
 
       <div id="uploadGrid-single" style="display:none; margin-bottom:6px;">
         <div class="dropzone" id="dropzone-single" data-slot="single">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4B5673" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4a5c6e" stroke-width="1.6"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
           <div class="cta">Toca aquí para tomar la foto o subir una imagen</div>
           <div class="sub">JPG, PNG o PDF · debe mostrar frente y reverso, ambos legibles</div>
           <input type="file" class="fileInput" data-slot="single" accept="image/*,application/pdf">
@@ -321,6 +336,18 @@
       <div id="coOwnersBlock"></div>
 
       <div class="fieldset-title">Comprador</div>
+      <div id="buyerIdScan" style="margin:0 0 16px; padding:16px; background:var(--paper); border:1.5px solid var(--line); border-radius:14px;">
+        <div style="font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:17px; margin-bottom:4px;">Cédula del comprador</div>
+        <div style="font-size:13.5px; color:var(--ink-mid); line-height:1.45; margin-bottom:12px;">Toma una foto o sube la cara frontal de la cédula (donde aparecen los datos) y leo tipo y número de documento, apellidos y nombres. O sáltate esto y escribe los datos manualmente abajo. Dirección, ciudad y teléfono siempre se escriben a mano.</div>
+        <div class="dropzone" id="buyerIdZone-front" style="padding:16px 12px; margin-bottom:8px;">
+          <div class="cta" style="font-size:15px;">Cédula (cara frontal)</div>
+          <div class="sub">Tomar foto o subir imagen · JPG, PNG o PDF</div>
+          <input type="file" class="fileInput" id="buyerIdInput-front" accept="image/*,application/pdf">
+        </div>
+        <div id="buyerIdPreview-front"></div>
+        <button type="button" class="btn btn-primary" id="buyerIdBtn" disabled>Leer cédula ▸</button>
+        <div id="buyerIdStatus"></div>
+      </div>
       <div class="grid" id="buyerFields"></div>
       <div id="buyerCoOwnersBlock"></div>
 
@@ -345,12 +372,12 @@
 
       <div class="stamp-wrap"><div class="stamp" id="stamp">
         <svg viewBox="0 0 200 200">
-          <circle cx="100" cy="100" r="92" fill="none" stroke="#A3311B" stroke-width="3" stroke-dasharray="4 3"/>
-          <circle cx="100" cy="100" r="78" fill="none" stroke="#A3311B" stroke-width="1.5"/>
-          <text x="100" y="80" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="17" letter-spacing="1.5" fill="#A3311B">TRASPASO</text>
-          <text x="100" y="100" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="17" letter-spacing="1.5" fill="#A3311B">YA</text>
-          <line x1="55" y1="112" x2="145" y2="112" stroke="#A3311B" stroke-width="1.5"/>
-          <text x="100" y="132" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-weight="600" font-size="10.5" letter-spacing="0.5" fill="#A3311B">LISTO PARA IMPRIMIR</text>
+          <circle cx="100" cy="100" r="92" fill="none" stroke="#12263A" stroke-width="3" stroke-dasharray="4 3"/>
+          <circle cx="100" cy="100" r="78" fill="none" stroke="#12263A" stroke-width="1.5"/>
+          <text x="100" y="80" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="17" letter-spacing="1.5" fill="#12263A">TRASPASO</text>
+          <text x="100" y="100" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="17" letter-spacing="1.5" fill="#12263A">YA</text>
+          <line x1="55" y1="112" x2="145" y2="112" stroke="#12263A" stroke-width="1.5"/>
+          <text x="100" y="132" text-anchor="middle" font-family="DM Sans, sans-serif" font-weight="700" font-size="10.5" letter-spacing="0.5" fill="#12263A">LISTO PARA IMPRIMIR</text>
         </svg>
       </div></div>
 
@@ -582,6 +609,35 @@ function renderBuyerCoOwners(){
         <input type="text" data-idx="${idx}" data-k="documento" inputmode="numeric" value="${owner.documento||''}">
       </div>`;
     list.appendChild(row);
+    const scan = document.createElement('div');
+    scan.style.cssText = 'margin:0 0 10px;';
+    scan.innerHTML = `
+      <button type="button" class="btn btn-ghost" style="padding:8px 14px; font-size:12.5px;">📷 Foto o archivo de la cédula del comprador ${idx+2}</button>
+      <input type="file" accept="image/*,application/pdf" style="display:none;">
+      <span class="coBuyerScanStatus"></span>`;
+    const scanBtn = scan.querySelector('button');
+    const scanInput = scan.querySelector('input');
+    const scanStatus = scan.querySelector('.coBuyerScanStatus');
+    scanBtn.addEventListener('click', ()=>scanInput.click());
+    scanInput.addEventListener('change', async e=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      scanBtn.disabled = true;
+      scanStatus.innerHTML = `<div class="status"><div class="spin"></div>Leyendo la cédula…</div>`;
+      try{
+        const img = await fileToIdImage(file);
+        const r = await readIdCard(img);
+        const o = state.buyerCoOwners[idx];
+        o.tipo_documento = r.tipo_documento;
+        o.documento = r.documento;
+        o.nombres = [r.nombres, r.apellido1, r.apellido2].filter(Boolean).join(' ').trim();
+        renderBuyerCoOwners();
+      }catch(err){
+        scanStatus.innerHTML = idErrorHtml(err);
+        scanBtn.disabled = false;
+      }
+    });
+    list.appendChild(scan);
     if(state.buyerCoOwners.length > 1){
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
@@ -600,6 +656,7 @@ function renderBuyerCoOwners(){
     });
   });
   list.querySelectorAll('input').forEach(inp=>{
+    if(inp.type === 'file') return; // el campo de la foto de cédula no es un campo de texto
     const k = inp.dataset.k;
     const idx = Number(inp.dataset.idx);
     if(k === 'documento'){
@@ -857,7 +914,7 @@ function handleFile(file, slot){
       document.getElementById('previewArea-'+slot).innerHTML = `
         <div class="preview-row">
           <div class="pdf-chip">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#17233D" stroke-width="1.6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#12263A" stroke-width="1.6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
             <span>${file.name}</span>
           </div>
         </div>`;
@@ -891,6 +948,116 @@ function handleFile(file, slot){
   };
   reader.readAsDataURL(file);
 }
+
+
+// ---- Cédula (foto o archivo -> tipo, número, apellidos, nombres) ----
+// Solo se necesita la cara frontal. Sirve para el comprador principal y
+// para cada comprador adicional.
+function fileToIdImage(file){
+  return new Promise((resolve, reject)=>{
+    const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+    const reader = new FileReader();
+    reader.onerror = ()=>reject(new Error('no se pudo abrir el archivo'));
+    if(isPdf){
+      reader.onload = ev=>resolve({base64: ev.target.result.split(',')[1], mediaType:'application/pdf', isPdf:true, name:file.name});
+      reader.readAsDataURL(file);
+      return;
+    }
+    reader.onload = ev=>{
+      const img = new Image();
+      img.onerror = ()=>reject(new Error('imagen no válida'));
+      img.onload = ()=>{
+        const scale = Math.min(1, 1100/img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width*scale; canvas.height = img.height*scale;
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        resolve({base64:dataUrl.split(',')[1], mediaType:'image/jpeg', isPdf:false, dataUrl, name:file.name});
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+// Devuelve {tipo_documento, documento, apellido1, apellido2, nombres} ya limpios
+// o lanza un Error con mensaje para mostrar al usuario.
+async function readIdCard(image){
+  const block = image.isPdf
+    ? {type:"document", source:{type:"base64", media_type:"application/pdf", data:image.base64}}
+    : {type:"image", source:{type:"base64", media_type:image.mediaType, data:image.base64}};
+  const prompt = `Esta es la cara frontal de un documento de identidad colombiano (normalmente una cédula de ciudadanía; también puede ser cédula de extranjería, tarjeta de identidad, pasaporte, etc.). Primero verifica que realmente sea un documento de identidad de una persona. Si NO lo es (por ejemplo es una tarjeta de propiedad de vehículo, un recibo, una foto sin relación o está ilegible), responde ÚNICAMENTE con este JSON: {"es_documento_valido": false, "motivo": "una frase corta en español explicando qué parece ser en su lugar"}. Si SÍ lo es, responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional, sin explicación, sin backticks ni marcado, con estas claves: es_documento_valido (true), tipo_documento (uno de: CC, CEXTRANJ, PASAPORTE, TIDENTI, NUIP, CDIPLOMATICO — usa CC para cédula de ciudadanía), documento (solo el número, sin puntos ni espacios), apellido1 (primer apellido), apellido2 (segundo apellido; "" si no tiene), nombres (todos los nombres de pila). Los apellidos aparecen en el campo APELLIDOS y los nombres en el campo NOMBRES; sepáralos correctamente. Si un campo no es legible usa "".`;
+  const response = await fetch("/api/extract", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      model:"claude-sonnet-4-6",
+      max_tokens:500,
+      messages:[{role:"user", content:[{type:"text", text:prompt}, block]}]
+    })
+  });
+  const data = await response.json();
+  const textBlock = (data.content||[]).find(b=>b.type==='text');
+  if(!textBlock) throw new Error('sin respuesta de texto');
+  const clean = textBlock.text.trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+  const parsed = JSON.parse(clean);
+  if(parsed.es_documento_valido === false){
+    const e = new Error('no es cédula'); e.notId = true; e.motivo = parsed.motivo||''; throw e;
+  }
+  const tipo = String(parsed.tipo_documento||'').toUpperCase().replace(/[^A-Z]/g,'');
+  const digits = String(parsed.documento||'').replace(/\D/g,'');
+  logExtraction('extraccion_cedula_comprador');
+  return {
+    tipo_documento: (tipo && DOCTYPE_OPTIONS.some(o=>o.value===tipo)) ? tipo : 'CC',
+    documento: digits ? Number(digits).toLocaleString('es-CO') : '',
+    apellido1: String(parsed.apellido1||'').toUpperCase(),
+    apellido2: String(parsed.apellido2||'').toUpperCase(),
+    nombres: String(parsed.nombres||'').toUpperCase()
+  };
+}
+function idErrorHtml(err){
+  if(err && err.notId) return `<div class="status err">⚠️ Esto no parece ser una cédula${err.motivo ? ` — parece ${err.motivo}` : ''}. Sube el documento correcto o escribe los datos manualmente.</div>`;
+  return `<div class="status err">No pude leer la cédula (${err && err.message ? err.message : 'error'}). Intenta con otra foto o escribe los datos manualmente.</div>`;
+}
+
+// Comprador principal
+let buyerIdImage = null;
+(function(){
+  const zone = document.getElementById('buyerIdZone-front');
+  const input = document.getElementById('buyerIdInput-front');
+  const btn = document.getElementById('buyerIdBtn');
+  const statusEl = document.getElementById('buyerIdStatus');
+  zone.addEventListener('click', ()=>input.click());
+  ['dragover','dragleave','drop'].forEach(evt=>{
+    zone.addEventListener(evt, e=>{
+      e.preventDefault();
+      zone.classList.toggle('drag', evt==='dragover');
+    });
+  });
+  async function load(file){
+    try{
+      buyerIdImage = await fileToIdImage(file);
+      document.getElementById('buyerIdPreview-front').innerHTML = buyerIdImage.isPdf
+        ? `<div class="preview-row"><div class="pdf-chip"><span>${buyerIdImage.name}</span></div></div>`
+        : `<div class="preview-row"><img class="preview-img" src="${buyerIdImage.dataUrl}" style="width:100%; height:90px;"></div>`;
+      statusEl.innerHTML = '';
+      btn.disabled = false;
+    }catch(err){ statusEl.innerHTML = idErrorHtml(err); }
+  }
+  zone.addEventListener('drop', e=>{ if(e.dataTransfer.files[0]) load(e.dataTransfer.files[0]); });
+  input.addEventListener('change', e=>{ if(e.target.files[0]) load(e.target.files[0]); });
+  btn.addEventListener('click', async ()=>{
+    if(!buyerIdImage) return;
+    btn.disabled = true;
+    statusEl.innerHTML = `<div class="status"><div class="spin"></div>Leyendo la cédula…</div>`;
+    try{
+      const r = await readIdCard(buyerIdImage);
+      Object.assign(state.buyer, r);
+      renderPartyFields('buyerFields', state.buyer);
+      statusEl.innerHTML = `<div class="status ok">✓ Datos leídos. Revísalos abajo y completa dirección, ciudad y teléfono.</div>`;
+    }catch(err){ statusEl.innerHTML = idErrorHtml(err); }
+    btn.disabled = !buyerIdImage;
+  });
+})();
 
 // ---- Extraction ----
 document.getElementById('extractBtn').addEventListener('click', async ()=>{
@@ -1708,7 +1875,7 @@ document.getElementById('generateBtn').addEventListener('click', async ()=>{
 
     const totalDocs = 2 + extraMandatoDocs.length + 1;
     statusEl.innerHTML = `<div class="status ok">✓ PDF generado (Compraventa + Mandato${extraMandatoDocs.length ? ' x'+(1+extraMandatoDocs.length) : ''} + FUN, ${totalDocs} páginas).</div>
-      <div style="margin-top:8px;"><a href="${blobUrl}" download="${filename}" target="_blank" style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#17233D; text-decoration:underline;">Si no se descargó solo, toca aquí para abrirlo / guardarlo</a></div>`;
+      <div style="margin-top:8px;"><a href="${blobUrl}" download="${filename}" target="_blank" style="font-family:'DM Sans',sans-serif; font-size:13.5px; font-weight:700; color:#12263A; text-decoration:underline;">Si no se descargó solo, toca aquí para abrirlo / guardarlo</a></div>`;
     stamp.classList.add('show');
     logExtraction('pdf_generado');
   }catch(err){
