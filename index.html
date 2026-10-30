@@ -1643,7 +1643,8 @@ async function fillMandato(pdfDoc, font, fontBold, mandanteOverride){
   const v = state.vehicle, seller = mandanteOverride || state.seller, buyer = state.buyer, sale = state.sale;
   // Mandante = vendedor (propietario), en negrilla. Su plantilla real deja el Mandatario
   // y el trámite en blanco para diligenciar a mano, así que no los auto-llenamos.
-  draw(fullName(seller), 202, 163, 9, true, 195);
+  // Entre "a saber" (termina en x=176) y "mayor de edad" (empieza en x=382) hay 206pt libres.
+  draw(fullName(seller), 180, 163, 9, true, 202);
   // "con [TIPO DE DOCUMENTO] [NÚMERO] quien..." — cubrimos el guion bajo del
   // blanco Y el "N°" fijo de la plantilla, y escribimos tipo+número juntos.
   page.drawRectangle({x:83, y:y(180.5), width:118, height:12.5, color: PDFLib.rgb(1,1,1)});
